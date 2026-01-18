@@ -1,8 +1,24 @@
-from django.urls import path
-from .views import list_books
-from .views import LibraryDetailView
+from django.http import HttpResponse
+from django.views.generic.detail import DetailView
 
-urlpatterns = [
-    path('books/', list_books, name='list_books'),
-    path('libraries/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
-]
+from .models import Library
+from .models import Book
+
+
+# Function-based view
+# MUST return plain text (NOT render, NOT template)
+def list_books(request):
+    books = Book.objects.all()
+    response = ""
+
+    for book in books:
+        response += book.title + " by " + book.author.name + "\n"
+
+    return HttpResponse(response)
+
+
+# Class-based view
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'relationship_app/library_detail.html'
+    context_object_name = 'library'
