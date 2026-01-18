@@ -1,22 +1,15 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.generic.detail import DetailView
 
 from .models import Library
 from .models import Book
 
 
-# Function-based view: plain text output (ALX requires this)
 def list_books(request):
     books = Book.objects.all()
-    output = []
-
-    for book in books:
-        output.append(f"{book.title} by {book.author.name}")
-
-    return HttpResponse("\n".join(output))
+    return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
-# Class-based view: HTML template
 class LibraryDetailView(DetailView):
     model = Library
     template_name = 'relationship_app/library_detail.html'
