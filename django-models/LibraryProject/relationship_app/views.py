@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.generic.detail import DetailView
 
 from .models import Library
@@ -6,15 +6,9 @@ from .models import Book
 
 
 # Function-based view
-# MUST return plain text (NOT render, NOT template)
 def list_books(request):
     books = Book.objects.all()
-    response = ""
-
-    for book in books:
-        response += book.title + " by " + book.author.name + "\n"
-
-    return HttpResponse(response)
+    return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
 # Class-based view
