@@ -1,8 +1,23 @@
-from django.urls import path
-from .views import list_books
-from .views import LibraryDetailView
+from django.http import HttpResponse
+from django.views.generic.detail import DetailView
 
-urlpatterns = [
-    path('books/', list_books, name='list_books'),
-    path('libraries/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
-]
+from .models import Library
+from .models import Book
+
+
+# Function-based view: plain text output (ALX requires this)
+def list_books(request):
+    books = Book.objects.all()
+    output = []
+
+    for book in books:
+        output.append(f"{book.title} by {book.author.name}")
+
+    return HttpResponse("\n".join(output))
+
+
+# Class-based view: HTML template
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'relationship_app/library_detail.html'
+    context_object_name = 'library'
