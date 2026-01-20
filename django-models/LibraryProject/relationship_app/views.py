@@ -13,6 +13,9 @@ from .models import Book
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
 
+from django.contrib.auth.decorators import permission_required
+from django.http import HttpResponse
+
 
 # Function-based view
 def list_books(request):
@@ -69,3 +72,16 @@ def member_view(request):
 
 
 
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    return HttpResponse("Add book view")
+
+
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, book_id):
+    return HttpResponse("Edit book view")
+
+
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    return HttpResponse("Delete book view")
