@@ -45,9 +45,10 @@ class Book(models.Model):
 
     class Meta:
         permissions = (
-            ('can_add_book', 'Can add book'),
-            ('can_change_book', 'Can change book'),
-            ('can_delete_book', 'Can delete book'),
+            ("can_view", "Can view book"),
+            ("can_create", "Can create book"),
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
         )
 
 
@@ -74,3 +75,4 @@ class Librarian(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
