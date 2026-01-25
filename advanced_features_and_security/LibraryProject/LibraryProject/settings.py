@@ -157,6 +157,15 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # Allow site to be included in browser preload lists
 SECURE_HSTS_PRELOAD = True
 
+
+# ==============================
+# Proxy SSL Header Configuration
+# ==============================
+
+# Tell Django to trust the X-Forwarded-Proto header
+# This is required when the app is behind a proxy (e.g. Nginx, load balancer)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
