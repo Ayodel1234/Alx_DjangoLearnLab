@@ -58,3 +58,28 @@ Example:
 @permission_required("bookshelf.can_view", raise_exception=True)
 def book_list(request):
     books = Book.objects.all()
+
+## Security Best Practices Implemented
+
+This project applies Django security best practices to protect against
+common web vulnerabilities.
+
+### Secure Settings
+- DEBUG set to False
+- Browser protections enabled:
+  - SECURE_BROWSER_XSS_FILTER
+  - X_FRAME_OPTIONS
+  - SECURE_CONTENT_TYPE_NOSNIFF
+- Secure cookies enforced:
+  - CSRF_COOKIE_SECURE
+  - SESSION_COOKIE_SECURE
+
+### CSRF Protection
+- All POST forms include `{% csrf_token %}`
+
+### SQL Injection Prevention
+- Django ORM is used for all database queries
+- User inputs are validated using Django forms
+
+### Content Security Policy (CSP)
+- CSP headers configured to restrict content loading to same origin
