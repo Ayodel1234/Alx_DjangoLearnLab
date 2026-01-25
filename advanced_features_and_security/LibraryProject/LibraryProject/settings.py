@@ -140,6 +140,22 @@ INSTALLED_APPS = [
 ]
 AUTH_USER_MODEL = "bookshelf.CustomUser"
 
+# ==============================
+# HTTPS & SECURE REDIRECTS
+# ==============================
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS)
+# Instruct browsers to only use HTTPS for this site for 1 year
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+
+# Apply HSTS to all subdomains
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Allow site to be included in browser preload lists
+SECURE_HSTS_PRELOAD = True
 
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'",)

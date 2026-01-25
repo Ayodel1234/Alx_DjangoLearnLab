@@ -83,3 +83,42 @@ common web vulnerabilities.
 
 ### Content Security Policy (CSP)
 - CSP headers configured to restrict content loading to same origin
+
+
+## HTTPS and Secure Redirects Configuration
+
+This project enforces HTTPS to ensure secure communication
+between clients and the server.
+
+### Django HTTPS Settings
+The following settings are configured in `settings.py`:
+- SECURE_SSL_REDIRECT forces all HTTP requests to HTTPS
+- SECURE_HSTS_SECONDS enables HTTP Strict Transport Security
+- SECURE_HSTS_INCLUDE_SUBDOMAINS applies HSTS to subdomains
+- SECURE_HSTS_PRELOAD allows browser preload listing
+- SESSION_COOKIE_SECURE ensures session cookies are HTTPS-only
+- CSRF_COOKIE_SECURE ensures CSRF cookies are HTTPS-only
+
+### Secure Headers
+Additional headers are configured to improve security:
+- X_FRAME_OPTIONS = "DENY" (prevents clickjacking)
+- SECURE_CONTENT_TYPE_NOSNIFF = True
+- SECURE_BROWSER_XSS_FILTER = True
+
+### Deployment Configuration (Example)
+In production, HTTPS should be enabled using SSL/TLS certificates
+configured in the web server (e.g., Nginx or Apache).
+
+Example (Nginx):
+- Configure SSL certificates
+- Redirect HTTP (port 80) to HTTPS (port 443)
+
+### Security Review
+These measures help protect against:
+- Man-in-the-middle attacks
+- Session hijacking
+- Clickjacking
+- Cross-site scripting (XSS)
+
+Further improvements may include automated certificate renewal
+and advanced monitoring.
