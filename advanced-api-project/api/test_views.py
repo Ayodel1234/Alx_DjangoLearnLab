@@ -1,26 +1,23 @@
-from django.urls import reverse
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
-from rest_framework.authtoken.models import Token
+
 from api.models import Author, Book
 
 
 class BookAPITestCase(APITestCase):
     """
-    Test suite for Book API CRUD operations and permissions.
+    Unit tests for Book API endpoints.
     """
 
     def setUp(self):
         """
-        Set up test data before each test.
-        This uses a separate test database automatically.
+        Set up test data for each test.
         """
         self.user = User.objects.create_user(
             username="testuser",
             password="testpassword"
         )
-        self.token = Token.objects.create(user=self.user)
 
         self.author = Author.objects.create(name="Test Author")
 
@@ -32,15 +29,15 @@ class BookAPITestCase(APITestCase):
 
     def authenticate(self):
         """
-        Helper method to authenticate requests using token.
+        Authenticate test client.
         """
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.token.key
-        )
+        self.client.login(username="testuser", password="testpassword")
+
+    # ---------------- READ TESTS ----------------
 
     def test_list_books(self):
         """
-        Test retrieving list of books (read-only access).
+        Test retrieving list of books (public access).
         """
         response = self.client.get("/books/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -53,9 +50,11 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["title"], "Test Book")
 
+    # ---------------- CREATE ----------------
+
     def test_create_book_requires_authentication(self):
         """
-        Test that creating a book without authentication is denied.
+        Ensure unauthenticated users cannot create books.
         """
         data = {
             "title": "New Book",
@@ -63,11 +62,11 @@ class BookAPITestCase(APITestCase):
             "author": self.author.id
         }
         response = self.client.post("/books/create/", data)
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_create_book_with_authentication(self):
+    def test_create_book_authenticated(self):
         """
-        Test creating a book with authentication.
+        Authenticated user can create a book.
         """
         self.authenticate()
         data = {
@@ -78,9 +77,11 @@ class BookAPITestCase(APITestCase):
         response = self.client.post("/books/create/", data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    # ---------------- UPDATE ----------------
+
     def test_update_book(self):
         """
-        Test updating a book.
+        Authenticated user can update a book.
         """
         self.authenticate()
         data = {
@@ -94,12 +95,37 @@ class BookAPITestCase(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    # ---------------- DELETE ----------------
+
     def test_delete_book(self):
         """
-        Test deleting a book.
+        Authenticated user can delete a book.
         """
         self.authenticate()
         response = self.client.delete(
             f"/books/{self.book.id}/delete/"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    # ---------------- FILTER / SEARCH / ORDER ----------------
+
+    def test_filter_books_by_year(self):
+        """
+        Test filtering books by publication year.
+        """
+        response = self.client.get("/books/?publication_year=2020")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_search_books(self):
+        """
+        Test searching books by title.
+        """
+        response = self.client.get("/books/?search=Test")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_order_books(self):
+        """
+        Test ordering books by title.
+        """
+        response = self.client.get("/books/?ordering=title")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

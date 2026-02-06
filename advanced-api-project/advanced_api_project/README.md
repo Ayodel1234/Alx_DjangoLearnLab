@@ -16,3 +16,19 @@ Create, update, and delete operations require authentication.
 
 ### Validation
 Custom validation ensures publication_year is not set in the future.
+
+
+## Testing
+
+This project uses Django REST Framework’s APITestCase
+to test Book API endpoints.
+
+### Covered Tests
+- List and retrieve books
+- Create, update, and delete books
+- Authentication and permission enforcement
+- Filtering, searching, and ordering
+
+### Run Tests
+```bash
+python manage.py test api
