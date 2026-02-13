@@ -6,6 +6,9 @@ from .models import Comment
 from .forms import CommentForm
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.views.generic import ListView
+from taggit.models import Tag
+from .models import Post
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (
@@ -143,3 +146,12 @@ class SearchResultsView(ListView):
                 Q(tags__name__icontains=query)
             ).distinct()
         return Post.objects.none()
+
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/posts.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        return Post.objects.filter(tags__slug=self.kwargs['tag_slug'])
