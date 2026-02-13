@@ -7,28 +7,33 @@
 <h2>All Blog Posts</h2>
 
 {% if user.is_authenticated %}
-    <p>
-        <a href="{% url 'post-create' %}">Create New Post</a>
-    </p>
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'post-create' %}">+ Create New Post</a>
+    </div>
 {% endif %}
 
-{% for post in posts %}
-    <hr>
+{% if posts %}
+    {% for post in posts %}
+        <div style="margin-bottom: 25px;">
+            <hr>
 
-    <h3>
-        <a href="{% url 'post-detail' post.pk %}">
-            {{ post.title }}
-        </a>
-    </h3>
+            <h3>
+                <a href="{% url 'post-detail' post.pk %}">
+                    {{ post.title }}
+                </a>
+            </h3>
 
-    <p>{{ post.content|truncatewords:20 }}</p>
+            <p>
+                {{ post.content|truncatewords:20 }}
+            </p>
 
-    <small>
-        By {{ post.author }} on {{ post.published_date|date:"F d, Y" }}
-    </small>
-
-{% empty %}
+            <small>
+                By {{ post.author }} on {{ post.published_date|date:"F d, Y" }}
+            </small>
+        </div>
+    {% endfor %}
+{% else %}
     <p>No posts available.</p>
-{% endfor %}
+{% endif %}
 
 {% endblock %}
