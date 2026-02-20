@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-
 from .models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,21 +24,37 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['followers']
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user registration.
-    """
+User = get_user_model()
 
-    password = serializers.CharField(write_only=True)
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'bio']
+        fields = ('username', 'email', 'password', 'password2', 'bio', 'profile_picture')
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Passwords must match."})
+        return attrs
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        Token.objects.create(user=user)
+        validated_data.pop('password2')
+
+        user = get_user_model().objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email'),
+            password=validated_data['password']
+        )
+
+        user.bio = validated_data.get('bio', '')
+        user.profile_picture = validated_data.get('profile_picture', None)
+        user.save()
+
         return user
+
 
 class LoginSerializer(serializers.Serializer):
     """
