@@ -9,11 +9,7 @@ from .serializers import (
     LoginSerializer
 )
 
-
 class RegisterView(generics.CreateAPIView):
-    """
-    User registration endpoint.
-    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
@@ -21,6 +17,7 @@ class RegisterView(generics.CreateAPIView):
         response = super().create(request, *args, **kwargs)
         user = User.objects.get(username=response.data['username'])
         token = Token.objects.get(user=user)
+
         return Response({
             "user": response.data,
             "token": token.key

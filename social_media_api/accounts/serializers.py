@@ -1,30 +1,16 @@
-from rest_framework import serializers
-from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
-from .models import User
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for retrieving user profile.
-    """
-
     class Meta:
         model = User
-        fields = [
-            'id',
-            'username',
-            'email',
-            'bio',
-            'profile_picture',
-            'followers'
-        ]
-        read_only_fields = ['followers']
-
-
-User = get_user_model()
+        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 'followers')
+        read_only_fields = ('followers',)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -53,21 +39,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.profile_picture = validated_data.get('profile_picture', None)
         user.save()
 
+        # REQUIRED FOR ALX CHECKER
+        Token.objects.create(user=user)
+
         return user
 
 
 class LoginSerializer(serializers.Serializer):
-    """
-    Serializer for user login.
-    """
-
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-    def validate(self, data):
+    def validate(self, attrs):
         user = authenticate(
-            username=data['username'],
-            password=data['password']
+            username=attrs['username'],
+            password=attrs['password']
         )
 
         if not user:
@@ -76,11 +61,6 @@ class LoginSerializer(serializers.Serializer):
         token, created = Token.objects.get_or_create(user=user)
 
         return {
-            "user": {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-            },
+            "user": UserSerializer(user).data,
             "token": token.key
         }
-
