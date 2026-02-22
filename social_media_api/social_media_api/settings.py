@@ -28,7 +28,12 @@ SECRET_KEY = 'django-insecure-^v^7r(eu-%9g!83sh1p88ty7eniztr#dssoai%ye9%2wu!!j%d
 
 
 DEBUG = False
+# Security settings for production
 
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
