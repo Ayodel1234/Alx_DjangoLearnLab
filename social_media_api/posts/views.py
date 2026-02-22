@@ -32,14 +32,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def feed(request):
     following_users = request.user.following.all()
-    posts = Post.objects.filter(
-        author__in=following_users
-    ).order_by('-created_at')
+
+    posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
