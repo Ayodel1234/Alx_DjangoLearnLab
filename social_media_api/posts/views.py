@@ -48,22 +48,13 @@ def feed(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
-    # ✅ ALX EXPECTS THIS EXACT LINE
     post = generics.get_object_or_404(Post, pk=pk)
 
-    # ✅ ALX EXPECTS THIS EXACT LINE
-    like, created = Like.objects.get_or_create(
-        user=request.user,
-        post=post
-    )
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
 
     if not created:
-        return Response(
-            {"message": "Already liked"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"message": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create notification
     if post.author != request.user:
         Notification.objects.create(
             recipient=post.author,
@@ -72,10 +63,7 @@ def like_post(request, pk):
             target=post
         )
 
-    return Response(
-        {"message": "Post liked successfully"},
-        status=status.HTTP_200_OK
-    )
+    return Response({"message": "Post liked successfully"}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
